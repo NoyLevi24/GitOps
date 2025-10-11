@@ -77,10 +77,10 @@ spec:
     spec:
       project: default
       sources:
-        - repoURL: 'https://github.com/noylevi/gitops.git'
+        - repoURL: 'https://github.com/NoyLevi24/GitOps.git'
           targetRevision: HEAD
           ref: values
-        - repoURL: 'https://github.com/noylevi/{{ repoName }}.git'
+        - repoURL: 'https://github.com/NoyLevi24/{{ repoName }}.git'
           targetRevision: '{{ branch }}'
           path: '{{ chartPath }}'
           helm:
