@@ -1,0 +1,75 @@
+# Development Environment Values for JournAI
+# This file overrides the default values.yaml from the Helm chart
+
+# Backend configuration
+backend:
+  replicaCount: 1  
+  
+  image:
+    repository: noylevi/journai-backend
+    pullPolicy: Always  
+    tag: "dev"  
+  
+  service:
+    type: ClusterIP
+    port: 3000
+    targetPort: 3000
+  
+  resources:
+    limits:
+      cpu: 300m  
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+  persistence:
+    enabled: true
+    storageClass: "local-path"
+    accessMode: ReadWriteOnce
+    size: 5Gi  
+    mountPath: /app/uploads
+
+# Frontend configuration
+frontend:
+  replicaCount: 1  
+  
+  image:
+    repository: noylevi/journai-frontend
+    pullPolicy: Always  
+    tag: "dev"  
+  
+  service:
+    type: ClusterIP
+    port: 80
+    targetPort: 8080
+  
+  resources:
+    limits:
+      cpu: 150m  
+      memory: 128Mi
+    requests:
+      cpu: 50m
+      memory: 64Mi
+
+# Ingress configuration
+ingress:
+  enabled: true
+  className: traefik
+  hosts:
+    - host: dev.journai.local
+      paths:
+        - path: /
+          pathType: Prefix
+          backend: frontend
+        - path: /api
+          pathType: Prefix
+          backend: backend
+        - path: /uploads
+          pathType: Prefix
+          backend: backend
+
+# Secrets configuration
+secrets:
+  useExistingSecret: true
+  existingSecretName: "journai-secrets-dev"

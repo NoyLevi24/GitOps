@@ -1,0 +1,75 @@
+# Production Environment Values for JournAI
+# This file overrides the default values.yaml from the Helm chart
+
+# Backend configuration
+backend:
+  replicaCount: 2  
+  
+  image:
+    repository: noylevi/journai-backend
+    pullPolicy: IfNotPresent  # Only pull if not present in prod
+    tag: "v1.4"  # Use stable version tag
+  
+  service:
+    type: ClusterIP
+    port: 3000
+    targetPort: 3000
+  
+  resources:
+    limits:
+      cpu: 1000m  
+      memory: 1Gi
+    requests:
+      cpu: 500m
+      memory: 512Mi
+
+  persistence:
+    enabled: true
+    storageClass: "local-path"
+    accessMode: ReadWriteOnce
+    size: 10Gi  
+    mountPath: /app/uploads
+
+# Frontend configuration
+frontend:
+  replicaCount: 2  
+  
+  image:
+    repository: noylevi/journai-frontend
+    pullPolicy: IfNotPresent  # Only pull if not present in prod
+    tag: "v1.2"  # Use stable version tag
+  
+  service:
+    type: ClusterIP
+    port: 80
+    targetPort: 8080
+  
+  resources:
+    limits:
+      cpu: 500m  
+      memory: 512Mi
+    requests:
+      cpu: 200m
+      memory: 256Mi
+
+# Ingress configuration
+ingress:
+  enabled: true
+  className: traefik
+  hosts:
+    - host: journai.com
+      paths:
+        - path: /
+          pathType: Prefix
+          backend: frontend
+        - path: /api
+          pathType: Prefix
+          backend: backend
+        - path: /uploads
+          pathType: Prefix
+          backend: backend
+
+# Secrets configuration
+secrets:
+  useExistingSecret: true
+  existingSecretName: "journai-secrets-prod"

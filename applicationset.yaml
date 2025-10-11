@@ -1,0 +1,93 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: journai-applicationset
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: journai-applicationset
+    app.kubernetes.io/part-of: journai
+spec:
+  generators:
+    - matrix:
+        generators:
+          - list:
+              elements:
+                - environment: dev
+                  branch: dev
+                  namespace: dev-journai
+                  syncPolicy:
+                    automated:
+                      prune: true
+                      selfHeal: true
+                    syncOptions:
+                      - CreateNamespace=true
+                    retry:
+                      limit: 5
+                      backoff:
+                        duration: 5s
+                        factor: 2
+                        maxDuration: 3m
+                - environment: staging
+                  branch: staging
+                  namespace: staging-journai
+                  syncPolicy:
+                    automated:
+                      prune: true
+                      selfHeal: true
+                    syncOptions:
+                      - CreateNamespace=true
+                    retry:
+                      limit: 5
+                      backoff:
+                        duration: 5s
+                        factor: 2
+                        maxDuration: 3m
+                - environment: prod
+                  branch: main
+                  namespace: prod-journai
+                  syncPolicy:
+                    syncOptions:
+                      - CreateNamespace=true
+                    retry:
+                      limit: 3
+                      backoff:
+                        duration: 10s
+                        factor: 2
+                        maxDuration: 5m
+          - list:
+              elements:
+                - appName: journai
+                  chartPath: JournAI-Chart
+                  repoName: JournAI
+                  description: "AI-Powered Travel Planner"
+  template:
+    metadata:
+      name: '{{ appName }}-{{ environment }}'
+      namespace: argocd
+      finalizers:
+        - resources-finalizer.argocd.argoproj.io
+      labels:
+        app.kubernetes.io/environment: '{{ environment }}'
+        app.kubernetes.io/name: '{{ appName }}'
+        app.kubernetes.io/part-of: '{{ appName }}'
+        app.kubernetes.io/instance: '{{ appName }}-{{ environment }}'
+      annotations:
+        argocd.argoproj.io/sync-wave: '1'
+        notifications.argoproj.io/subscribe.on-sync-succeeded.slack: journai-deployments
+    spec:
+      project: default
+      sources:
+        - repoURL: 'https://github.com/noylevi/gitops.git'
+          targetRevision: HEAD
+          ref: values
+        - repoURL: 'https://github.com/noylevi/{{ repoName }}.git'
+          targetRevision: '{{ branch }}'
+          path: '{{ chartPath }}'
+          helm:
+            valueFiles:
+              - $values/environments/{{ environment }}/values.yaml
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: '{{ namespace }}'
+      syncPolicy: '{{ syncPolicy }}'
+        
