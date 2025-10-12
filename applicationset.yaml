@@ -62,32 +62,32 @@ spec:
                   description: "AI-Powered Travel Planner"
   template:
     metadata:
-      name: '{{ appName }}-{{ environment }}'
+      name: "{{ appName }}-{{ environment }}"
       namespace: argocd
       finalizers:
         - resources-finalizer.argocd.argoproj.io
       labels:
-        app.kubernetes.io/environment: '{{ environment }}'
-        app.kubernetes.io/name: '{{ appName }}'
-        app.kubernetes.io/part-of: '{{ appName }}'
-        app.kubernetes.io/instance: '{{ appName }}-{{ environment }}'
+        app.kubernetes.io/environment: "{{ environment }}"
+        app.kubernetes.io/name: "{{ appName }}"
+        app.kubernetes.io/part-of: "{{ appName }}"
+        app.kubernetes.io/instance: "{{ appName }}-{{ environment }}"
       annotations:
-        argocd.argoproj.io/sync-wave: '1'
-        notifications.argoproj.io/subscribe.on-sync-succeeded.slack: journai-deployments
+        argocd.argoproj.io/sync-wave: "1"
+        description: "{{ description }}"
     spec:
       project: default
       sources:
-        - repoURL: 'https://github.com/NoyLevi24/GitOps.git'
+        - repoURL: https://github.com/NoyLevi24/GitOps.git
           targetRevision: HEAD
           ref: values
-        - repoURL: 'https://github.com/NoyLevi24/{{ repoName }}.git'
-          targetRevision: '{{ branch }}'
-          path: '{{ chartPath }}'
+        - repoURL: https://github.com/NoyLevi24/{{ repoName }}.git
+          targetRevision: "{{ branch }}"
+          path: "{{ chartPath }}"
           helm:
             valueFiles:
               - $values/environments/{{ environment }}/values.yaml
       destination:
         server: https://kubernetes.default.svc
-        namespace: '{{ namespace }}'
-      syncPolicy: '{{ syncPolicy }}'
-        
+        namespace: "{{ namespace }}"
+      syncPolicy: "{{ syncPolicy }}"
+      retry: "{{ retry }}"
