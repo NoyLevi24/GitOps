@@ -90,4 +90,3 @@ spec:
         server: https://kubernetes.default.svc
         namespace: "{{ namespace }}"
       syncPolicy: "{{ syncPolicy }}"
-      retry: "{{ retry }}"
