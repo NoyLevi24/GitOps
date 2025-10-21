@@ -15,45 +15,12 @@ spec:
                 - environment: dev
                   branch: dev
                   namespace: dev-journai
-                  syncPolicy:
-                    automated:
-                      prune: true
-                      selfHeal: true
-                    syncOptions:
-                      - CreateNamespace=true
-                    retry:
-                      limit: 5
-                      backoff:
-                        duration: 5s
-                        factor: 2
-                        maxDuration: 3m
                 - environment: staging
                   branch: staging
                   namespace: staging-journai
-                  syncPolicy:
-                    automated:
-                      prune: true
-                      selfHeal: true
-                    syncOptions:
-                      - CreateNamespace=true
-                    retry:
-                      limit: 5
-                      backoff:
-                        duration: 5s
-                        factor: 2
-                        maxDuration: 3m
                 - environment: prod
                   branch: main
                   namespace: prod-journai
-                  syncPolicy:
-                    syncOptions:
-                      - CreateNamespace=true
-                    retry:
-                      limit: 3
-                      backoff:
-                        duration: 10s
-                        factor: 2
-                        maxDuration: 5m
           - list:
               elements:
                 - appName: journai
@@ -63,9 +30,6 @@ spec:
   template:
     metadata:
       name: "{{ appName }}-{{ environment }}"
-      namespace: argocd
-      finalizers:
-        - resources-finalizer.argocd.argoproj.io
       labels:
         app.kubernetes.io/environment: "{{ environment }}"
         app.kubernetes.io/name: "{{ appName }}"
@@ -74,6 +38,8 @@ spec:
       annotations:
         argocd.argoproj.io/sync-wave: "1"
         description: "{{ description }}"
+      finalizers:
+        - resources-finalizer.argocd.argoproj.io
     spec:
       project: default
       sources:
@@ -89,4 +55,15 @@ spec:
       destination:
         server: https://kubernetes.default.svc
         namespace: "{{ namespace }}"
-      syncPolicy: "{{ syncPolicy }}"
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
+        retry:
+          limit: 5
+          backoff:
+            duration: 5s
+            factor: 2
+            maxDuration: 3m

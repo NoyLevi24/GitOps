@@ -7,8 +7,7 @@ backend:
   
   image:
     repository: noylevi/journai-backend
-    pullPolicy: Always
-    tag: "v1.4"   
+    pullPolicy: Always   
   
   service:
     type: ClusterIP
@@ -36,8 +35,7 @@ frontend:
   
   image:
     repository: noylevi/journai-frontend
-    pullPolicy: Always
-    tag: "v1.2"  
+    pullPolicy: Always  
   
   service:
     type: ClusterIP

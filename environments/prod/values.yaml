@@ -7,8 +7,7 @@ backend:
   
   image:
     repository: noylevi/journai-backend
-    pullPolicy: IfNotPresent  # Only pull if not present in prod
-    tag: "v1.4"  # Use stable version tag
+    pullPolicy: IfNotPresent  
   
   service:
     type: ClusterIP
@@ -36,8 +35,7 @@ frontend:
   
   image:
     repository: noylevi/journai-frontend
-    pullPolicy: IfNotPresent  # Only pull if not present in prod
-    tag: "v1.2"  # Use stable version tag
+    pullPolicy: IfNotPresent  
   
   service:
     type: ClusterIP
