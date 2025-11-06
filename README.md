@@ -1,6 +1,15 @@
 # JournAI GitOps Repository
 
-This repository contains the GitOps configuration for deploying JournAI application using ArgoCD.
+This repository contains the GitOps configuration for deploying the JournAI application on AWS EKS using ArgoCD and Terraform.
+
+## 🏗️ Infrastructure Components
+
+- **AWS EKS** - Managed Kubernetes clusters
+- **AWS RDS** - PostgreSQL database
+- **AWS S3** - Object storage for file uploads
+- **AWS IAM** - Fine-grained access control
+- **Terraform** - Infrastructure as Code
+- **ArgoCD** - GitOps continuous delivery
 
 ## 📁 Structure
 
