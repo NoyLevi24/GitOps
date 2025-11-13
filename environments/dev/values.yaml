@@ -1,5 +1,5 @@
 # Development Environment Values for JournAI
-# This file overrides the default values.yaml from the Helm chart
+# This file overrides the default values.yaml from the Helm chart.
 
 # Backend configuration
 backend:
@@ -16,18 +16,11 @@ backend:
   
   resources:
     limits:
-      cpu: 300m  
-      memory: 256Mi
+      cpu: 500m
+      memory: 512Mi
     requests:
-      cpu: 100m
-      memory: 128Mi
-
-  persistence:
-    enabled: true
-    storageClass: "local-path"
-    accessMode: ReadWriteOnce
-    size: 5Gi  
-    mountPath: /app/uploads
+      cpu: 250m
+      memory: 256Mi
 
 # Frontend configuration
 frontend:
@@ -44,30 +37,14 @@ frontend:
   
   resources:
     limits:
-      cpu: 150m  
-      memory: 128Mi
+      cpu: 200m
+      memory: 256Mi
     requests:
-      cpu: 50m
-      memory: 64Mi
+      cpu: 100m
+      memory: 128Mi
 
-# Ingress configuration
-ingress:
-  enabled: true
-  className: traefik
-  hosts:
-    - host: dev.journai.local
-      paths:
-        - path: /
-          pathType: Prefix
-          backend: frontend
-        - path: /api
-          pathType: Prefix
-          backend: backend
-        - path: /uploads
-          pathType: Prefix
-          backend: backend
 
 # Secrets configuration
 secrets:
   useExistingSecret: true
-  existingSecretName: "journai-secrets-dev"
+  existingSecretName: "journai-secrets"

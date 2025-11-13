@@ -22,13 +22,6 @@ backend:
       cpu: 500m
       memory: 512Mi
 
-  persistence:
-    enabled: true
-    storageClass: "local-path"
-    accessMode: ReadWriteOnce
-    size: 10Gi  
-    mountPath: /app/uploads
-
 # Frontend configuration
 frontend:
   replicaCount: 2  
@@ -50,24 +43,7 @@ frontend:
       cpu: 200m
       memory: 256Mi
 
-# Ingress configuration
-ingress:
-  enabled: true
-  className: traefik
-  hosts:
-    - host: journai.com
-      paths:
-        - path: /
-          pathType: Prefix
-          backend: frontend
-        - path: /api
-          pathType: Prefix
-          backend: backend
-        - path: /uploads
-          pathType: Prefix
-          backend: backend
-
 # Secrets configuration
 secrets:
   useExistingSecret: true
-  existingSecretName: "journai-secrets-prod"
+  existingSecretName: "journai-secrets"

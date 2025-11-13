@@ -3,7 +3,7 @@
 
 # Backend configuration
 backend:
-  replicaCount: 2  
+  replicaCount: 1  
   
   image:
     repository: noylevi/journai-backend
@@ -22,16 +22,9 @@ backend:
       cpu: 250m
       memory: 256Mi
 
-  persistence:
-    enabled: true
-    storageClass: "local-path"
-    accessMode: ReadWriteOnce
-    size: 8Gi  
-    mountPath: /app/uploads
-
 # Frontend configuration
 frontend:
-  replicaCount: 2  
+  replicaCount: 1  
   
   image:
     repository: noylevi/journai-frontend
@@ -50,24 +43,7 @@ frontend:
       cpu: 100m
       memory: 128Mi
 
-# Ingress configuration
-ingress:
-  enabled: true
-  className: traefik
-  hosts:
-    - host: staging.journai.local
-      paths:
-        - path: /
-          pathType: Prefix
-          backend: frontend
-        - path: /api
-          pathType: Prefix
-          backend: backend
-        - path: /uploads
-          pathType: Prefix
-          backend: backend
-
 # Secrets configuration
 secrets:
   useExistingSecret: true
-  existingSecretName: "journai-secrets-staging"
+  existingSecretName: "journai-secrets"

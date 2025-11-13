@@ -13,13 +13,13 @@ spec:
           - list:
               elements:
                 - environment: dev
-                  branch: dev
+                  branch: feature/aws #dev
                   namespace: dev-journai
                 - environment: staging
-                  branch: staging
+                  branch: feature/aws #staging
                   namespace: staging-journai
                 - environment: prod
-                  branch: main
+                  branch: feature/aws #main
                   namespace: prod-journai
           - list:
               elements:
@@ -44,7 +44,7 @@ spec:
       project: default
       sources:
         - repoURL: https://github.com/NoyLevi24/GitOps.git
-          targetRevision: HEAD
+          targetRevision: feature/aws #HEAD
           ref: values
         - repoURL: https://github.com/NoyLevi24/{{ repoName }}.git
           targetRevision: "{{ branch }}"
