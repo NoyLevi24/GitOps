@@ -47,3 +47,8 @@ frontend:
 secrets:
   useExistingSecret: true
   existingSecretName: "journai-secrets"
+
+vault:
+  role: "journai-staging-role"
+  # נתיב הסוד המשותף (קבוע)
+  secretPath: "secret/journai/all-environments"
