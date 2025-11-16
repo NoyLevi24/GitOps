@@ -13,14 +13,17 @@ spec:
           - list:
               elements:
                 - environment: dev
-                  branch: feature/aws #dev
+                  branch: feature/ssm
                   namespace: dev-journai
+                  awsAccountId: "255195625987"  
                 - environment: staging
-                  branch: feature/aws #staging
+                  branch: feature/ssm
                   namespace: staging-journai
+                  awsAccountId: "255195625987" 
                 - environment: prod
-                  branch: feature/aws #main
+                  branch: feature/ssm
                   namespace: prod-journai
+                  awsAccountId: "255195625987"  
           - list:
               elements:
                 - appName: journai
@@ -44,7 +47,7 @@ spec:
       project: default
       sources:
         - repoURL: https://github.com/NoyLevi24/GitOps.git
-          targetRevision: feature/aws #HEAD
+          targetRevision: feature/ssm
           ref: values
         - repoURL: https://github.com/NoyLevi24/{{ repoName }}.git
           targetRevision: "{{ branch }}"
@@ -52,6 +55,11 @@ spec:
           helm:
             valueFiles:
               - $values/environments/{{ environment }}/values.yaml
+            parameters:
+              - name: environment
+                value: "{{ environment }}"
+              - name: global.aws.accountId
+                value: "{{ awsAccountId }}"
       destination:
         server: https://kubernetes.default.svc
         namespace: "{{ namespace }}"
