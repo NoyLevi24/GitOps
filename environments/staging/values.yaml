@@ -46,4 +46,4 @@ frontend:
 # Secrets configuration
 secrets:
   useExistingSecret: true
-  existingSecretName: "journai-secrets"
+  existingSecretName: "journai-secrets-staging"
