@@ -1,12 +1,13 @@
 # JournAI GitOps Repository
 
-This repository contains the GitOps configuration for deploying the JournAI application on AWS EKS using ArgoCD and Terraform.
+This repository contains the GitOps configuration for deploying the JournAI application on AWS EKS using ArgoCD and Terraform with AWS Secrets Manager integration.
 
 ## 🏗️ Infrastructure Components
 
 - **AWS EKS** - Managed Kubernetes clusters
 - **AWS RDS** - PostgreSQL database
 - **AWS S3** - Object storage for file uploads
+- **AWS Secrets Manager** - Secure secrets storage and rotation
 - **AWS IAM** - Fine-grained access control
 - **Terraform** - Infrastructure as Code
 - **ArgoCD** - GitOps continuous delivery
@@ -27,45 +28,35 @@ GitOps/
 
 ## 🚀 Prerequisites
 
-Before deploying with ArgoCD, you need to create Kubernetes secrets for each environment.
+Before deploying with ArgoCD, ensure the following are in place:
 
-### Create Secrets
+### AWS Secrets Manager Setup
 
-The application requires the following secrets for each environment:
-- `JWT_SECRET` - JWT token secret
-- `GEMINI_API_KEY` - Google Gemini API key
-- `OPENAI_API_KEY` - OpenAI API key
-- `DB_PASSWORD` - Database password
+1. **Create AWS Secrets Manager secrets** for each environment:
+   - Database credentials
+   - API keys (Gemini, OpenAI)
+   - JWT secrets
+   - Application-specific secrets
 
-#### Dev Environment:
-```bash
-kubectl create secret generic journai-secrets-dev \
-  --from-literal=JWT_SECRET='your-dev-jwt-secret' \
-  --from-literal=GEMINI_API_KEY='your-gemini-key' \
-  --from-literal=OPENAI_API_KEY='your-openai-key' \
-  --from-literal=DB_PASSWORD='your-dev-db-password' \
-  -n dev-journai
-```
+2. **Secret Naming Convention:**
+   ```
+   journai/dev/config
+   journai/staging/config
+   journai/prod/config
+   ```
 
-#### Staging Environment:
-```bash
-kubectl create secret generic journai-secrets-staging \
-  --from-literal=JWT_SECRET='your-staging-jwt-secret' \
-  --from-literal=GEMINI_API_KEY='your-gemini-key' \
-  --from-literal=OPENAI_API_KEY='your-openai-key' \
-  --from-literal=DB_PASSWORD='your-staging-db-password' \
-  -n staging-journai
-```
-
-#### Production Environment:
-```bash
-kubectl create secret generic journai-secrets-prod \
-  --from-literal=JWT_SECRET='your-prod-jwt-secret' \
-  --from-literal=GEMINI_API_KEY='your-gemini-key' \
-  --from-literal=OPENAI_API_KEY='your-openai-key' \
-  --from-literal=DB_PASSWORD='your-prod-db-password' \
-  -n prod-journai
-```
+3. **IAM Permissions:**
+   Ensure the EKS node role has permissions to access AWS Secrets Manager:
+   ```json
+   {
+     "Effect": "Allow",
+     "Action": [
+       "secretsmanager:GetSecretValue",
+       "secretsmanager:DescribeSecret"
+     ],
+     "Resource": "arn:aws:secretsmanager:*:*:secret:journai/*"
+   }
+   ```
 
 ### Generate Strong Secrets:
 ```bash
@@ -75,6 +66,10 @@ openssl rand -base64 32
 # Generate DB password
 openssl rand -base64 24
 ```
+
+### ArgoCD Installation
+
+Ensure ArgoCD is installed and configured in your EKS cluster.
 
 ## 📝 Deploy with ArgoCD
 
@@ -120,17 +115,40 @@ argocd app sync journai-prod
 - **Namespace:** `prod-journai`
 - **Branch:** `main`
 - **Replicas:** 2 (backend), 2 (frontend)
-- **Auto-sync:** ❌ Manual sync required
+- **Auto-sync:** ✅ Enabled (with self-heal)
 - **Domain:** `journai.com`
 
 ## 🔐 Secrets Management
 
-Each environment uses a pre-created Kubernetes secret:
-- Dev: `journai-secrets-dev`
-- Staging: `journai-secrets-staging`
-- Prod: `journai-secrets-prod`
+JournAI uses **AWS Secrets Manager** for secure secrets storage and management. Secrets are automatically injected into Kubernetes pods using the Secrets Store CSI Driver.
 
-**Important:** Create these secrets BEFORE deploying the application.
+### AWS Secrets Manager Integration
+
+The application automatically retrieves the following secrets from AWS Secrets Manager:
+- **Database credentials** (RDS username/password)
+- **API keys** (Gemini, OpenAI)
+- **JWT secrets**
+- **Application secrets**
+
+### Secret Names in AWS Secrets Manager
+
+Each environment uses prefixed secret names:
+- Dev: `journai/dev/*`
+- Staging: `journai/staging/*`
+- Production: `journai/prod/*`
+
+### Kubernetes Secret Integration
+
+The Helm chart is configured to use existing Kubernetes secrets:
+```yaml
+secrets:
+  useExistingSecret: true
+  existingSecretName: "journai-secrets"
+```
+
+The Secrets Store CSI Driver automatically creates and syncs these Kubernetes secrets from AWS Secrets Manager.
+
+**Important:** Ensure AWS Secrets Manager secrets are created BEFORE deploying the application.
 
 ## 🛠️ Troubleshooting
 
@@ -143,9 +161,15 @@ argocd app get journai-prod
 
 ### Check Secrets:
 ```bash
-kubectl get secret journai-secrets-dev -n dev-journai
-kubectl get secret journai-secrets-staging -n staging-journai
-kubectl get secret journai-secrets-prod -n prod-journai
+# Check Kubernetes secrets (auto-synced from AWS Secrets Manager)
+kubectl get secret journai-secrets -n dev-journai
+kubectl get secret journai-secrets -n staging-journai
+kubectl get secret journai-secrets -n prod-journai
+
+# Check AWS Secrets Manager secrets
+aws secretsmanager describe-secret --secret-id journai/dev/config
+aws secretsmanager describe-secret --secret-id journai/staging/config
+aws secretsmanager describe-secret --secret-id journai/prod/config
 ```
 
 ### View Application Logs:
@@ -161,5 +185,15 @@ argocd app sync journai-dev --force
 
 ## 📚 Related Repositories
 
-- **Application Code:** [JournAI](https://github.com/noylevi/JournAI)
-- **Helm Chart:** Located in `JournAI/JournAI-Chart/`
+- **Application Code:** [JournAI](https://github.com/NoyLevi24/JournAI.git)
+- **Terraform Infrastructure:** [Terraform](https://github.com/NoyLevi24/Terraform.git)
+- **Helm Chart:** Located in `JournAI/JournAI-Chart/` within the application repository
+
+## 🔗 Repository Structure
+
+This GitOps repository references:
+- **Source Repository:** `https://github.com/NoyLevi24/JournAI.git`
+- **Target Branch:** `main`
+- **Chart Path:** `JournAI-Chart`
+
+The ApplicationSet automatically deploys the Helm chart from the source repository using environment-specific values from this GitOps repository.
