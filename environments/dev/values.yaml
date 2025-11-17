@@ -47,4 +47,4 @@ frontend:
 # Secrets configuration
 secrets:
   useExistingSecret: true
-  existingSecretName: "journai-secrets-dev"
+  existingSecretName: "journai-secrets"
