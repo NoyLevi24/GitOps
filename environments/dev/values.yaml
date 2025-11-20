@@ -43,6 +43,8 @@ frontend:
       cpu: 100m
       memory: 128Mi
 
+ingress:
+  host: "dev.journai.site"
 
 # Secrets configuration
 secrets:

@@ -43,6 +43,9 @@ frontend:
       cpu: 100m
       memory: 128Mi
 
+ingress:
+  host: "staging.journai.site"
+
 # Secrets configuration
 secrets:
   useExistingSecret: true
