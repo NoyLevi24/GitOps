@@ -102,21 +102,21 @@ argocd app sync journai-prod
 - **Branch:** `dev`
 - **Replicas:** 1 (backend), 1 (frontend)
 - **Auto-sync:** ✅ Enabled
-- **Domain:** `dev.journai.local`
+- **Domain:** `dev.journai.site`
 
 ### Staging Environment
 - **Namespace:** `staging-journai`
 - **Branch:** `staging`
 - **Replicas:** 2 (backend), 2 (frontend)
 - **Auto-sync:** ✅ Enabled
-- **Domain:** `staging.journai.local`
+- **Domain:** `staging.journai.site`
 
 ### Production Environment
 - **Namespace:** `prod-journai`
 - **Branch:** `main`
 - **Replicas:** 2 (backend), 2 (frontend)
 - **Auto-sync:** ✅ Enabled (with self-heal)
-- **Domain:** `journai.com`
+- **Domain:** `journai.site`
 
 ## 🔐 Secrets Management
 
