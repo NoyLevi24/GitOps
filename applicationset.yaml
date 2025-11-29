@@ -13,15 +13,15 @@ spec:
           - list:
               elements:
                 - environment: dev
-                  branch: feature/ssm
+                  branch: dev
                   namespace: dev-journai
                   awsAccountId: "255195625987"  
                 - environment: staging
-                  branch: feature/ssm
+                  branch: staging
                   namespace: staging-journai
                   awsAccountId: "255195625987" 
                 - environment: prod
-                  branch: feature/ssm
+                  branch: main
                   namespace: prod-journai
                   awsAccountId: "255195625987"  
           - list:
@@ -47,7 +47,7 @@ spec:
       project: default
       sources:
         - repoURL: https://github.com/NoyLevi24/GitOps.git
-          targetRevision: feature/ssm
+          targetRevision: HEAD
           ref: values
         - repoURL: https://github.com/NoyLevi24/{{ repoName }}.git
           targetRevision: "{{ branch }}"
